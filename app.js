@@ -27,7 +27,12 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // or your frontend domain
+    credentials: true,
+  })
+);
 app.use(express.json()); // ⬅️ Use built-in JSON parser instead of body-parser
 app.use(express.urlencoded({ extended: true })); // For form-data
 app.use(express.static("public"));
