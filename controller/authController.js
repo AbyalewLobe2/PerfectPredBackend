@@ -17,18 +17,20 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
-  // FIXED: Correct way to set cookie expiry
+  // Cookie options
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ), // convert to ms
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    ),
+    httpOnly: true, // can't be accessed by JS
+    secure: process.env.NODE_ENV === "production", // only over HTTPS
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // cross-site support
   };
 
+  // Send cookie
   res.cookie("jwt", token, cookieOptions);
 
-  // Hide password from output
+  // Hide password
   user.password = undefined;
 
   res.status(statusCode).json({
